@@ -15,24 +15,20 @@ This package provides widgets that enhances scrollable widgets by enabling auto-
 This package supports two built-in methods to activate auto-scrolling:
 
 **Middle Mouse Click (Press & Release)**
+
 - Click the middle mouse button (scroll wheel) once to activate auto-scrolling.
 - Move the cursor in the desired direction to scroll.
 - Click any mouse button to exit auto-scrolling mode.
 
-
 **Middle Mouse Click & Drag**
+
 - Press and hold the middle mouse button (scroll wheel) to activate auto-scrolling.
 - Drag the cursor in the desired direction to scroll.
 - Release the middle mouse button to exit auto-scrolling mode.
 
 ## Platform Support
 
-This is supported for all relevant platforms. However, auto scroll shouldn't be used on Mobile platforms.
-
-| Android | iOS | MacOS | Web | Linux | Windows |
-| :-----: | :-: | :---: | :-: | :---: | :-----: |
-|   ❌    | ❌  |  ✅   | ✅  |  ✅   |   ✅    |
-
+This package supports all platforms, but does require mouse events to trigger the auto scroll feature.
 
 ## Getting started
 
@@ -101,7 +97,7 @@ AutoScroll(
       // No scroll currently active
       return SingleDirectionAnchor();
     }
-    
+
     // Show default cursor
     return null;
   },
@@ -129,7 +125,7 @@ AutoScroll(
     // turned in the corresponding scroll direction.
     return switch (direction) {
       AutoScrollDirection.none => const SingleDirectionAnchor(),
-      AutoScrollDirection.up || AutoScrollDirection.down => DirectionArrow(direction: direction), 
+      AutoScrollDirection.up || AutoScrollDirection.down => DirectionArrow(direction: direction),
       _ => null,
     };
   },

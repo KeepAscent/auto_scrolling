@@ -11,7 +11,7 @@ void main() {
       final controller = ScrollController();
       await tester.pumpWidget(
         _buildAutoScroll(
-          controller,
+          controller: controller,
           addEnoughScrollSpace: false,
           onScrolling: (isS) => isScrolling = isS,
         ),
@@ -36,9 +36,38 @@ void main() {
       expect(isScrolling, false);
     });
 
+    testWidgets('Use PrimaryScrollController by default', (tester) async {
+      late final BuildContext context;
+      await tester.pumpWidget(
+        _buildAutoScroll(
+          isPrimary: true,
+          onBuildContextReady: (ctx) => context = ctx,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final controller = PrimaryScrollController.of(context);
+      expect(controller, isNotNull);
+      expect(controller.offset, 0.0);
+
+      final center = tester.getCenter(find.byType(AutoScroll));
+
+      await tester.tapAt(center, buttons: kMiddleMouseButton);
+      await tester.pump();
+
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await gesture.addPointer(location: center);
+      await tester.pump();
+
+      await gesture.moveBy(const Offset(0, 100));
+      await tester.pumpAndSettle(const Duration(seconds: 5));
+
+      expect(controller.offset, controller.position.maxScrollExtent);
+    });
+
     testWidgets('Scroll vertically', (tester) async {
       final controller = ScrollController();
-      await tester.pumpWidget(_buildAutoScroll(controller));
+      await tester.pumpWidget(_buildAutoScroll(controller: controller));
       await tester.pumpAndSettle();
 
       expect(controller.offset, 0.0);
@@ -63,7 +92,7 @@ void main() {
       final controller = ScrollController();
       await tester.pumpWidget(
         _buildAutoScroll(
-          controller,
+          controller: controller,
           scrollDirection: Axis.horizontal,
         ),
       );
@@ -92,7 +121,7 @@ void main() {
       var isScrolling = false;
       await tester.pumpWidget(
         _buildAutoScroll(
-          controller,
+          controller: controller,
           scrollDirection: Axis.horizontal,
           onScrolling: (isS) => isScrolling = isS,
         ),
@@ -134,7 +163,7 @@ void main() {
       final controller = ScrollController();
       await tester.pumpWidget(
         _buildAutoScroll(
-          controller,
+          controller: controller,
           scrollDirection: Axis.horizontal,
           anchorBuilder: (_) => const IgnorePointer(child: Text(anchorLabel)),
         ),
@@ -167,7 +196,7 @@ void main() {
       final controller = ScrollController();
       await tester.pumpWidget(
         _buildAutoScroll(
-          controller,
+          controller: controller,
           onScrolling: (isS) => isScrolling = isS,
         ),
       );
@@ -211,7 +240,7 @@ void main() {
       var isScrolling = false;
       await tester.pumpWidget(
         _buildAutoScroll(
-          controller,
+          controller: controller,
           onScrolling: (isS) => isScrolling = isS,
         ),
       );
@@ -244,7 +273,7 @@ void main() {
 
     testWidgets('AutoScroll honors default deadZoneRadius', (tester) async {
       final controller = ScrollController();
-      await tester.pumpWidget(_buildAutoScroll(controller));
+      await tester.pumpWidget(_buildAutoScroll(controller: controller));
       await tester.pumpAndSettle();
 
       expect(controller.offset, 0.0);
@@ -289,7 +318,7 @@ void main() {
       final controller = ScrollController();
       await tester.pumpWidget(
         _buildAutoScroll(
-          controller,
+          controller: controller,
           deadZoneRadius: deadZoneRadius,
         ),
       );
@@ -336,7 +365,7 @@ void main() {
       final controller = ScrollController();
       await tester.pumpWidget(
         _buildAutoScroll(
-          controller,
+          controller: controller,
           willUseCustomCursor: (direction) => [
             AutoScrollDirection.up,
             AutoScrollDirection.down
@@ -395,8 +424,8 @@ void main() {
   });
 }
 
-Widget _buildAutoScroll(
-  ScrollController controller, {
+Widget _buildAutoScroll({
+  ScrollController? controller,
   bool addEnoughScrollSpace = true,
   Axis scrollDirection = Axis.vertical,
   void Function(bool isScrolling)? onScrolling,
@@ -404,26 +433,35 @@ Widget _buildAutoScroll(
   int deadZoneRadius = 10,
   Widget? Function(AutoScrollDirection)? cursorBuilder,
   bool Function(AutoScrollDirection)? willUseCustomCursor,
+  bool isPrimary = false,
+  void Function(BuildContext)? onBuildContextReady,
 }) {
   return MaterialApp(
     home: Scaffold(
-      body: AutoScroll(
-        willUseCustomCursor: willUseCustomCursor,
-        cursorBuilder: cursorBuilder,
-        deadZoneRadius: deadZoneRadius,
-        anchorBuilder: anchorBuilder,
-        controller: controller,
-        scrollDirection: scrollDirection,
-        onScrolling: onScrolling,
-        child: ListView.builder(
-          controller: controller,
-          scrollDirection: scrollDirection,
-          itemCount: addEnoughScrollSpace ? 100 : 1,
-          itemBuilder: (_, __) => SizedBox(
-            height: addEnoughScrollSpace ? 500 : 30,
-            width: addEnoughScrollSpace ? 500 : 30,
-          ),
-        ),
+      body: Builder(
+        builder: (context) {
+          onBuildContextReady?.call(context);
+
+          return AutoScroll(
+            willUseCustomCursor: willUseCustomCursor,
+            cursorBuilder: cursorBuilder,
+            deadZoneRadius: deadZoneRadius,
+            anchorBuilder: anchorBuilder,
+            controller: controller,
+            scrollDirection: scrollDirection,
+            onScrolling: onScrolling,
+            child: ListView.builder(
+              primary: isPrimary,
+              controller: controller,
+              scrollDirection: scrollDirection,
+              itemCount: addEnoughScrollSpace ? 100 : 1,
+              itemBuilder: (_, __) => SizedBox(
+                height: addEnoughScrollSpace ? 500 : 30,
+                width: addEnoughScrollSpace ? 500 : 30,
+              ),
+            ),
+          );
+        },
       ),
     ),
   );

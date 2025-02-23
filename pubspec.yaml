@@ -27,13 +27,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-  plugin:
-    platforms:
-      web:
-      macos:
-        dartPluginClass: AutoScroll
-      windows:
-        dartPluginClass: AutoScroll
-      linux:
-        dartPluginClass: AutoScroll

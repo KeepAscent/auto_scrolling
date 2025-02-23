@@ -27,7 +27,7 @@ class AutoScroll extends StatefulWidget {
   ///
   const AutoScroll({
     super.key,
-    required this.controller,
+    this.controller,
     this.scrollDirection = Axis.vertical,
     this.onScrolling,
     this.deadZoneRadius = 10,
@@ -44,7 +44,10 @@ class AutoScroll extends StatefulWidget {
   /// This has to be the same controller that is attached to
   /// the [Scrollable] widget.
   ///
-  final ScrollController controller;
+  /// If the controller is not provided, it will default to the
+  /// [PrimaryScrollController].
+  ///
+  final ScrollController? controller;
 
   /// The direction of the scroll.
   ///
@@ -124,6 +127,8 @@ class AutoScroll extends StatefulWidget {
 class _AutoScrollState extends State<AutoScroll> {
   final _key = GlobalKey();
 
+  late ScrollController controller;
+
   Timer? scrollTimer;
 
   Offset? startOffset;
@@ -140,12 +145,23 @@ class _AutoScrollState extends State<AutoScroll> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller = widget.controller ?? PrimaryScrollController.of(context);
+
       setState(() {
-        canScroll = widget.controller.hasClients &&
-            widget.controller.position.maxScrollExtent > 0;
+        canScroll =
+            controller.hasClients && controller.position.maxScrollExtent > 0;
       });
     });
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant AutoScroll oldWidget) {
+    if (widget.controller != oldWidget.controller) {
+      controller = widget.controller ?? PrimaryScrollController.of(context);
+      scrollTimer?.cancel();
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -247,8 +263,8 @@ class _AutoScrollState extends State<AutoScroll> {
         Axis.vertical => startOffset!.dy - cursorOffset!.dy,
       };
 
-      widget.controller.position.moveTo(
-        widget.controller.position.pixels - move * widget.velocity,
+      controller.position.moveTo(
+        controller.position.pixels - move * widget.velocity,
       );
 
       direction = switch (widget.scrollDirection) {

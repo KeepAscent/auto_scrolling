@@ -11,14 +11,7 @@ class SingleDirectionScrollSample extends StatefulWidget {
 
 class _SingleDirectionScrollSampleState
     extends State<SingleDirectionScrollSample> {
-  final ScrollController controller = ScrollController();
   bool isVertical = true;
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,10 +50,9 @@ class _SingleDirectionScrollSampleState
             anchorBuilder: (_) => SingleDirectionAnchor(
               direction: isVertical ? Axis.vertical : Axis.horizontal,
             ),
-            controller: controller,
             scrollDirection: isVertical ? Axis.vertical : Axis.horizontal,
             child: ListView.builder(
-              controller: controller,
+              primary: true,
               scrollDirection: isVertical ? Axis.vertical : Axis.horizontal,
               itemCount: 100,
               itemBuilder: (_, index) => Container(
