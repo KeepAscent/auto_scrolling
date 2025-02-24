@@ -10,9 +10,11 @@ import 'package:flutter/material.dart';
 ///
 ///  * [ScrollBehavior], the default scrolling behavior extended by this class.
 ///  * [CupertinoAutoScrollBehavior], alternative for the Cupertino widget set.
+///
 class MaterialAutoScrollBehavior extends MaterialScrollBehavior {
   /// Creates a MaterialScrollBehavior that adds [AutoScroll]s on desktop
   /// platforms in addition to default MaterialScrollBehavior.
+  ///
   const MaterialAutoScrollBehavior({this.autoScrollBuilder});
 
   /// The [AutoScroll] builder that is called to build the [AutoScroll] wrapper
