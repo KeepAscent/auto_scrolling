@@ -65,6 +65,17 @@ MultiAxisAutoScroll(
 
 _Notice again, that the vertical and horizontal controller should be the same as those attached to your scrollables._
 
+To add autoscroll to every scrollables, add the following line to MaterialApp:
+
+```dart
+MaterialApp(
+  scrollBehavior: MaterialAutoScrollBehavior(),
+  ...,
+)
+```
+
+There is also `CupertinoAutoScrollBehavior` for Cupertino widget set.
+
 ## Customization
 
 Both `AutoScroll` and `MultiAxisAutoScroll` support custom anchor and cursor widgets.
