@@ -7,7 +7,7 @@ This package provides widgets that enhances scrollable widgets by enabling auto-
 ## Features
 
 - Two ways to engage auto scroll
-- Supports custom anchor (similar to FireFox)
+- Supports custom anchor (similar to Firefox)
 - Supports custom cursor for directional cursor
 - Pre-built anchors and cursors to get you up and auto scrolling quickly
 - Support for both single and multi directional scrolling
